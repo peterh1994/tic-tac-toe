@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by Peter.Hajlak on 28.4.2017.
- */
+
 public class MainActivity extends AppCompatActivity {
 
     private Context mContext;

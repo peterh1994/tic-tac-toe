@@ -8,5 +8,7 @@ import java.util.List;
  */
 public interface AI {
 
-    public int getMoveOfAI(List<Field> fields, int lastPosition);
+    public void getMoveOfAI(List<List<Field>> fields, int lastPositionX, int lastPositionY, int[] data);
+
 }
+

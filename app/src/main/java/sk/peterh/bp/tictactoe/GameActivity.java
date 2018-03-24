@@ -9,6 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ConstatntPackage.Constant.BORDER_X;
+import static ConstatntPackage.Constant.BORDER_Y;
+
 /**
  * Created by Peter.Hajlak on 28.4.2017.
  */
@@ -25,11 +28,14 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        List<Field> items = new ArrayList<>();
-        for(int i = 0; i < 64; i++){
-            Field f = new Field();
-            items.add(f);
-        }
+        List<List<Field>> items = new ArrayList<List<Field>>();
+        for(int i = 0; i < BORDER_X; i++){
+            items.add(new ArrayList<Field>());
+            for(int j = 0; j < BORDER_Y; j++) {
+                items.get(i).add(new Field());
+                }
+            }
+
 
         getSupportActionBar().setTitle("Game");
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);

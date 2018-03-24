@@ -8,7 +8,8 @@ import java.util.List;
 
 public class MinMaxAI implements AI {
     @Override
-    public int getMoveOfAI(List<Field> fields, int lastPosition) {
-        return 0;
+    public  void getMoveOfAI(List<List<Field>> fields, int lastPositionX, int lastPositionY,int[] data) {
+
+
     }
 }
