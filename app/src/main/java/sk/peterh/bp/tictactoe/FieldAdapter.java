@@ -25,8 +25,8 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
     public Context context;
     public List<List<Field>> fields;
     public AI computer;
-
     private int mCounter = 1;
+    private int playerCounter = 0;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public CardView mCardView;
@@ -52,10 +52,11 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
         context = parent.getContext();
         // Get the TextView reference from RecyclerView current item
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        final int squareSize = (int)(displayMetrics.widthPixels / 10);
+        final int squareSize = (int)(displayMetrics.widthPixels / ((BORDER_X+BORDER_Y)/2));
         final TextView textView = (TextView) v.findViewById(R.id.text_view);
         textView.setWidth(squareSize);
         textView.setHeight(squareSize);
+        textView.setTextSize((-9*BORDER_X)+87);
         // Set a click listener for the current item of RecyclerView
         final ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(new View.OnClickListener() {
@@ -66,16 +67,18 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
                 int Y = vh.getAdapterPosition()%BORDER_Y;
                 if (fields.get(X).get(Y).isEmpty()) {
                     fields.get(X).get(Y).setPlayer("X");
+                    playerCounter++;
                     notifyDataSetChanged();
-                    String result = GameResult.checkWinner(fields, "X", X, Y);
+                    String result = GameResult.checkWinner(fields, "X", X, Y, playerCounter);
                     if (!result.isEmpty()) {
                         resultMessage(result);
                     } else {
                         int[] data = new int[2];
                         computer.getMoveOfAI(fields, X, Y, data);
                         fields.get(data[0]).get(data[1]).setPlayer("O");
+                        playerCounter++;
                         notifyDataSetChanged();
-                       String result2 = GameResult.checkWinner(fields, "O", data[0], data[1]);
+                       String result2 = GameResult.checkWinner(fields, "O", data[0], data[1], playerCounter);
                         if (!result2.isEmpty()) {
                             resultMessage(result2);
                         }
@@ -108,11 +111,6 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-       // return fields.size();
-       // int fieldSize = 0;
-        //for(int i=0; i< 8; i++)
-      //      fieldSize += fields.get(i).size();
-        //return fieldSize;
         return BORDER_X*BORDER_Y;
     }
 

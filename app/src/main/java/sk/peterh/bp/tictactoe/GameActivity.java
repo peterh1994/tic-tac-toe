@@ -42,7 +42,7 @@ public class GameActivity extends AppCompatActivity {
 
         mContext = getApplicationContext();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mLayoutManager = new GridLayoutManager(mContext, 8 ); //Utility.calculateNoOfColumns(context));
+        mLayoutManager = new GridLayoutManager(mContext, (BORDER_X+BORDER_Y)/2 ); //Utility.calculateNoOfColumns(context)); //Size of grid X*Y
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
