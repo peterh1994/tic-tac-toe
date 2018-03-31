@@ -65,10 +65,9 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
                 int X = vh.getAdapterPosition()/BORDER_X;
                 int Y = vh.getAdapterPosition()%BORDER_Y;
                 if (fields.get(X).get(Y).isEmpty()) {
-                    //int pos = vh.getAdapterPosition();
                     fields.get(X).get(Y).setPlayer("X");
                     notifyDataSetChanged();
-                    String result = GameResult.checkWinner(fields, "X");
+                    String result = GameResult.checkWinner(fields, "X", X, Y);
                     if (!result.isEmpty()) {
                         resultMessage(result);
                     } else {
@@ -76,7 +75,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
                         computer.getMoveOfAI(fields, X, Y, data);
                         fields.get(data[0]).get(data[1]).setPlayer("O");
                         notifyDataSetChanged();
-                        String result2 = GameResult.checkWinner(fields, "O");
+                       String result2 = GameResult.checkWinner(fields, "O", data[0], data[1]);
                         if (!result2.isEmpty()) {
                             resultMessage(result2);
                         }
