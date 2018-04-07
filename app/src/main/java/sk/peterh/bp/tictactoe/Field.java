@@ -15,11 +15,13 @@ public class Field {
     private surrField up_right = new surrField();
     private surrField down_left = new surrField();
     private surrField down_right = new surrField();
+    private int scoreX, scoreO;
 
 
     public Field () {
         up.count = down.count = left.count = right.count = up_left.count = up_right.count =  down_left.count = down_right.count = 0;
         up.player = down.player = left.player = right.player = up_left.player = up_right.player =  down_left.player = down_right.player = "";
+        scoreX = scoreO = 0;
     }
     public String getPlayer() {
         return player;
@@ -75,6 +77,13 @@ public class Field {
     public void setSurroundUpRightPlayer(String surrPlayer) {this.up_right.player = surrPlayer;}
     public void setSurroundDownLeftPlayer(String surrPlayer) {this.down_left.player = surrPlayer;}
     public void setSurroundDownRightPlayer(String surrPlayer) {this.down_right.player = surrPlayer;}
+
+
+    public void setScoreX(int score) {this.scoreX = score;}
+    public void setScoreO(int score) {this.scoreO = score;}
+
+    public int getScoreX() {return this.scoreX;}
+    public int getScoreO() {return this.scoreO;}
 
     class surrField {
         public int count = 0;
