@@ -15,7 +15,7 @@ public class GameResult {
 
     public static String checkWinner(List<List<Field>> fields, String player, int X, int Y, int playerCounter) {
 
-        FieldScore.getFiledScore(fields,player,X,Y);
+
 
         int count = 0;
 
@@ -61,6 +61,8 @@ public class GameResult {
 
         if (playerCounter == (BORDER_X*BORDER_Y))
             return "Remíza";
+
+        FieldScore.getFiledScore(fields,player,X,Y);
 
         return "";
 

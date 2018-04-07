@@ -11,342 +11,300 @@ import static ConstatntPackage.Constant.BORDER_Y;
 public class FieldScore {
 
 
-    private List<List<Field>> fields;
-    private List<List<Field>> fields1;
-
     public static void getFiledScore(List<List<Field>> fields, String player, int X, int Y) {
-
-        int i = 1;
         String res = "";
 
-//-------------------------From right to left------------------------------------//
-        i = 0;
-        while ((Y - i) >= 0) {                                                                                    //search from left to right
-            if (Y == 0) {                                                                                       //if point is at left border
-                fields.get(X).get(Y + 1).setSurroundLeftCount(1);                                               //
-                fields.get(X).get(Y + 1).setSurroundLeftPlayer(player);
-                getPlayerScore(fields,X,Y + 1);
-                break;
-            } else if (!(fields.get(X).get(Y - i).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X).get(Y - i).getSurroundRightCount() < i) {                                     //count cannot be decreased
-                    fields.get(X).get(Y - i).setSurroundRightCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X).get(Y - i).setSurroundRightPlayer(player);
-                    getPlayerScore(fields,X,Y - i);
+        fields.get(X).get(Y).resetSurroundCount();
+        fields.get(X).get(Y).setScoreX(0);
+        fields.get(X).get(Y).setScoreO(0);
+
+        //-------------------------horizontal------------------------------------//
+        //Left direction
+        int count1 = 0, count2=0, i = 0;                                                                //Count of same char like player on left and right without X,Y point
+        int X_1 = -1, Y_1 = -1;                                                                         //Tmp var, -1 means that there is no player's char around
+        int X_2 = -1, Y_2 = -1;                                                                         //Tmp var, -1 means that there is no player's char around
+
+        if (Y != 0) i = 1;                                                                              //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if (Y - i >= 0) {                                                                           //check if index with position is not out of border
+                if (fields.get(X).get(Y - i).getPlayer().equals(player)) {                              //if index with position is equal to player's char
+                    fields.get(X).get(Y - i).resetSurroundCount();                                      //clean up used positions
+                    fields.get(X).get(Y - i).setScoreX(0);                                              //clean up used positions
+                    fields.get(X).get(Y - i).setScoreO(0);                                              //clean up used positions
+                    i++;                                                                                //increment index
                 }
-                if ((Y + 1) < BORDER_Y) {                                                                        //check right border
-                    fields.get(X).get(Y + 1).setSurroundLeftCount(i);
-                    fields.get(X).get(Y + 1).setSurroundLeftPlayer(player);
-                    getPlayerScore(fields,X,Y + 1);
+                else if (fields.get(X).get(Y - i).isEmpty()) {                                          //if there is not player's char, check if point is empty
+                    X_1 = X;                                                                            //if point is empty save axis X
+                    Y_1 = Y - i;                                                                        //also axis Y
+                    break;                                                                              //run out of infinite while
                 }
-                break;
-            } else if ((Y - i) == 0) {                                                                            //check left border
-                if ((Y + 1) < BORDER_Y) {
-                    fields.get(X).get(Y + 1).setSurroundLeftCount(i + 1);
-                    fields.get(X).get(Y + 1).setSurroundLeftPlayer(player);
-                    getPlayerScore(fields,X,Y + i);
-                } else {
-                    fields.get(X).get(Y).setSurroundLeftCount(i);
-                    fields.get(X).get(Y).setSurroundLeftPlayer(player);
-                    getPlayerScore(fields,X,Y);
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //index is out of matrix border, it means last player's char is on border
+        }
+        count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        //Right direction
+        if (Y != (BORDER_Y - 1)) i = 1;                                                                 //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if (Y + i < BORDER_Y) {                                                                     //check if index with position is not out of border
+                if (fields.get(X).get(Y + i).getPlayer().equals(player)){                               //if index with position is equal to player's char
+                    fields.get(X).get(Y + i).resetSurroundCount();                                      //clean up used positions
+                    fields.get(X).get(Y + i).setScoreX(0);                                              //clean up used positions
+                    fields.get(X).get(Y + i).setScoreO(0);                                              //clean up used positions
+                    i++;                                                                                //increment index
                 }
-                break;
-            } else i++;
+                else if (fields.get(X).get(Y + i).isEmpty()) {                                          //if there is not player's char, check if point is empty
+                    X_2 = X;                                                                            //if point is empty save axis X
+                    Y_2 = Y + i;                                                                        //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //run out of infinite while
+        }
+        count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
+
+        if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
+            fields.get(X_1).get(Y_1).setSurroundRightCount(count1 + count2 + 1);                        //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_1).get(Y_1).setSurroundRightPlayer(player);                                    //set for what which count is it
+            getPlayerScore(fields,X_1,Y_1);                                                             //compute score on empty position
+        }
+        if ((X_2 != -1) && (Y_2 != -1)) {                                                               //axis must be other than -1, -1 is default value
+            fields.get(X_2).get(Y_2).setSurroundLeftCount(count1 + count2 + 1);                         //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_2).get(Y_2).setSurroundLeftPlayer(player);                                     //set for what which count is it
+            getPlayerScore(fields,X_2,Y_2);                                                             //compute score on empty position
+        }
+        count1 = 0; count2 = 0; i = 0;                                                                  //Count of same char like player on left and right without X,Y point
+        X_1 = -1; Y_1 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+        X_2 = -1; Y_2 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+
+        //-------------------------vertical------------------------------------//
+        //Up direction
+        if (X != 0) i = 1;                                                                              //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if (X - i >= 0) {                                                                           //check if index with position is not out of border
+                if (fields.get(X - i).get(Y).getPlayer().equals(player)) {                              //if index with position is equal to player's char
+                    fields.get(X - i).get(Y).resetSurroundCount();                                      //clean up used positions
+                    fields.get(X - i).get(Y).setScoreX(0);                                              //clean up used positions
+                    fields.get(X - i).get(Y).setScoreO(0);                                              //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X - i).get(Y).isEmpty()) {                                          //if there is not player's char, check if point is empty
+                    X_1 = X - i;                                                                        //if point is empty save axis X
+                    Y_1 = Y;                                                                            //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //index is out of matrix border, it means last player's char is on border
+        }
+        count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        //Down direction
+        if (X != (BORDER_X - 1)) i = 1;                                                                 //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if (X + i < BORDER_X) {                                                                     //check if index with position is not out of border
+                if (fields.get(X + i).get(Y).getPlayer().equals(player)){                               //if index with position is equal to player's char
+                    fields.get(X + i).get(Y).resetSurroundCount();                                      //clean up used positions
+                    fields.get(X + i).get(Y).setScoreX(0);                                              //clean up used positions
+                    fields.get(X + i).get(Y).setScoreO(0);                                              //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X + i).get(Y).isEmpty()) {                                          //if there is not player's char, check if point is empty
+                    X_2 = X + i;                                                                        //if point is empty save axis X
+                    Y_2 = Y;                                                                            //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //run out of infinite while
+        }
+        count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
+
+        if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
+            fields.get(X_1).get(Y_1).setSurroundDownCount(count1 + count2 + 1);                         //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_1).get(Y_1).setSurroundDownPlayer(player);                                     //set for what which count is it
+            getPlayerScore(fields,X_1,Y_1);                                                             //compute score on empty position
+        }
+        if ((X_2 != -1) && (Y_2 != -1)) {                                                               //axis must be other than -1, -1 is default value
+            fields.get(X_2).get(Y_2).setSurroundUpCount(count1 + count2 + 1);                           //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_2).get(Y_2).setSurroundUpPlayer(player);                                       //set for what which count is it
+            getPlayerScore(fields,X_2,Y_2);                                                             //compute score on empty position
+        }
+        count1 = 0; count2 = 0; i = 0;                                                                  //Count of same char like player on left and right without X,Y point
+        X_1 = -1; Y_1 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+        X_2 = -1; Y_2 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+
+
+        //-------------------------diagonal +------------------------------------//
+        //Up left direction
+        if ((X != 0) || (Y != 0)) i = 1;                                                                //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if ((X - i >= 0) && (Y - i >= 0)) {                                                         //check if index with position is not out of border
+                if (fields.get(X - i).get(Y - i).getPlayer().equals(player)) {                          //if index with position is equal to player's char
+                    fields.get(X - i).get(Y - i).resetSurroundCount();                                  //clean up used positions
+                    fields.get(X - i).get(Y - i).setScoreX(0);                                          //clean up used positions
+                    fields.get(X - i).get(Y - i).setScoreO(0);                                          //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X - i).get(Y - i).isEmpty()) {                                      //if there is not player's char, check if point is empty
+                    X_1 = X - i;                                                                        //if point is empty save axis X
+                    Y_1 = Y - i;                                                                        //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //index is out of matrix border, it means last player's char is on border
+        }
+        count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        //Down Right
+        if ((X != (BORDER_X - 1)) || (Y != (BORDER_Y - 1))) i = 1;                                      //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if ((X + i < BORDER_X) && (Y + i < BORDER_Y)) {                                             //check if index with position is not out of border
+                if (fields.get(X + i).get(Y + i).getPlayer().equals(player)){                           //if index with position is equal to player's char
+                    fields.get(X + i).get(Y + i).resetSurroundCount();                                  //clean up used positions
+                    fields.get(X + i).get(Y + i).setScoreX(0);                                          //clean up used positions
+                    fields.get(X + i).get(Y + i).setScoreO(0);                                          //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X + i).get(Y + i).isEmpty()) {                                      //if there is not player's char, check if point is empty
+                    X_2 = X + i;                                                                        //if point is empty save axis X
+                    Y_2 = Y + i;                                                                        //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //run out of infinite while
+        }
+        count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
+
+        if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
+            fields.get(X_1).get(Y_1).setSurroundDownRightCount(count1 + count2 + 1);                         //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_1).get(Y_1).setSurroundDownRightPlayer(player);                                //set for what which count is it
+            getPlayerScore(fields,X_1,Y_1);                                                             //compute score on empty position
+        }
+        if ((X_2 != -1) && (Y_2 != -1)) {                                                               //axis must be other than -1, -1 is default value
+            fields.get(X_2).get(Y_2).setSurroundUpLeftCount(count1 + count2 + 1);                         //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_2).get(Y_2).setSurroundUpLeftPlayer(player);                                     //set for what which count is it
+            getPlayerScore(fields,X_2,Y_2);                                                             //compute score on empty position
+        }
+        count1 = 0; count2 = 0; i = 0;                                                                  //Count of same char like player on left and right without X,Y point
+        X_1 = -1; Y_1 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+        X_2 = -1; Y_2 = -1;                                                                             //Tmp var, -1 means that there is no player's char around
+
+
+        //-------------------------diagonal -------------------------------------//
+        //Down left direction
+        if ((X != (BORDER_X - 1)) || (Y != 0)) i = 1;                                                                //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if ((X + i < BORDER_X) && (Y - i >= 0)) {                                                         //check if index with position is not out of border
+                if (fields.get(X + i).get(Y - i).getPlayer().equals(player)) {                          //if index with position is equal to player's char
+                    fields.get(X + i).get(Y - i).resetSurroundCount();                                  //clean up used positions
+                    fields.get(X + i).get(Y - i).setScoreX(0);                                          //clean up used positions
+                    fields.get(X + i).get(Y - i).setScoreO(0);                                          //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X + i).get(Y - i).isEmpty()) {                                      //if there is not player's char, check if point is empty
+                    X_1 = X + i;                                                                        //if point is empty save axis X
+                    Y_1 = Y - i;                                                                        //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //index is out of matrix border, it means last player's char is on border
+        }
+        count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        //Up Right
+        if ((X != 0) || (Y != (BORDER_Y - 1))) i = 1;                                      //Check if point is on border of matrix
+        while(i > 0){                                                                                   //if i = 1, point is not at border and program can continue
+            if ((X - i >= 0) && (Y + i < BORDER_Y)) {                                             //check if index with position is not out of border
+                if (fields.get(X - i).get(Y + i).getPlayer().equals(player)){                           //if index with position is equal to player's char
+                    fields.get(X - i).get(Y + i).resetSurroundCount();                                  //clean up used positions
+                    fields.get(X - i).get(Y + i).setScoreX(0);                                          //clean up used positions
+                    fields.get(X - i).get(Y + i).setScoreO(0);                                          //clean up used positions
+                    i++;                                                                                //increment index
+                }
+                else if (fields.get(X - i).get(Y + i).isEmpty()) {                                      //if there is not player's char, check if point is empty
+                    X_2 = X - i;                                                                        //if point is empty save axis X
+                    Y_2 = Y + i;                                                                            //also axis Y
+                    break;                                                                              //run out of infinite while
+                }
+                else break;                                                                             //run out of infinite while
+            }
+            else break;                                                                                 //run out of infinite while
+        }
+        count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
+
+        if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
+            fields.get(X_1).get(Y_1).setSurroundUpRightCount(count1 + count2 + 1);                        //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_1).get(Y_1).setSurroundUpRightPlayer(player);                                    //set for what which count is it
+            getPlayerScore(fields,X_1,Y_1);                                                             //compute score on empty position
+        }
+        if ((X_2 != -1) && (Y_2 != -1)) {                                                               //axis must be other than -1, -1 is default value
+            fields.get(X_2).get(Y_2).setSurroundDownLeftCount(count1 + count2 + 1);                         //count of things on one side + count of thing on oposite side + actual position (1)
+            fields.get(X_2).get(Y_2).setSurroundDownLeftPlayer(player);                                     //set for what which count is it
+            getPlayerScore(fields,X_2,Y_2);                                                             //compute score on empty position
         }
 
-//-------------------------From left to right------------------------------------//
-        i = 0;
-        while ((Y + i) < BORDER_Y) {
-            if (Y == (BORDER_Y - 1)) {
-                fields.get(X).get(Y - 1).setSurroundRightCount(1);
-                fields.get(X).get(Y - 1).setSurroundRightPlayer(player);
-                getPlayerScore(fields,X,Y - 1);
-                break;
-            } else if (!(fields.get(X).get(Y + i).getPlayer().equals(player))) {
-                if (fields.get(X).get(Y + i).getSurroundLeftCount() < i) {
-                    fields.get(X).get(Y + i).setSurroundLeftCount(i);
-                    fields.get(X).get(Y + i).setSurroundLeftPlayer(player);
-                    getPlayerScore(fields,X,Y + i);
-                }
-                if ((Y - 1) >= 0) {
-                    fields.get(X).get(Y - 1).setSurroundRightCount(i);
-                    fields.get(X).get(Y - 1).setSurroundRightPlayer(player);
-                    getPlayerScore(fields,X,Y - 1);
-                }
-                break;
-            } else if ((Y + i) == (BORDER_Y - 1)) {
-                if ((Y - 1) >= 0) {
-                    fields.get(X).get(Y - 1).setSurroundRightCount(i + 1);
-                    fields.get(X).get(Y - 1).setSurroundRightPlayer(player);
-                    getPlayerScore(fields,X,Y - 1);
-                } else {
-                    fields.get(X).get(Y).setSurroundRightCount(i);
-                    fields.get(X).get(Y).setSurroundRightPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
+
+        if (fields.get(X).get(Y).getPlayer().equals("X")) {
+            res = getDebgStr(fields);
+            fields.get(X).get(Y).getScoreX();
         }
 
 
-//-------------------------From Down to up------------------------------------//
-        i = 0;
-        while ((X - i) >= 0) {                                                                                    //search from left to right
-            if (X == 0) {                                                                                       //if point is at left border
-                fields.get(X + 1).get(Y).setSurroundUpCount(1);                                               //
-                fields.get(X + 1).get(Y).setSurroundUpPlayer(player);
-                getPlayerScore(fields,X + 1,Y);
-                break;
-            } else if (!(fields.get(X - i).get(Y).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X - i).get(Y).getSurroundDownCount() < i) {                                     //count cannot be decreased
-                    fields.get(X - i).get(Y).setSurroundDownCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X - i).get(Y).setSurroundDownPlayer(player);
-                    getPlayerScore(fields,X - i,Y);
-                }
-                if ((X + 1) < BORDER_X) {                                                                        //check right border
-                    fields.get(X + 1).get(Y).setSurroundUpCount(i);
-                    fields.get(X + 1).get(Y).setSurroundUpPlayer(player);
-                    getPlayerScore(fields,X + 1,Y);
-                }
-                break;
-            } else if ((X - i) == 0) {                                                                            //check left border
-                if ((X + 1) < BORDER_X) {
-                    fields.get(X + 1).get(Y).setSurroundUpCount(i + 1);
-                    fields.get(X + 1).get(Y).setSurroundUpPlayer(player);
-                    getPlayerScore(fields,X + 1,Y);
-                } else {
-                    fields.get(X).get(Y).setSurroundUpCount(i);
-                    fields.get(X).get(Y).setSurroundUpPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-
-        //-------------------------From up to down------------------------------------//
-        i = 0;
-        while ((X + i) < BORDER_X) {
-            if (X == (BORDER_X - 1)) {
-                fields.get(X - 1).get(Y).setSurroundDownCount(1);
-                fields.get(X - 1).get(Y).setSurroundDownPlayer(player);
-                getPlayerScore(fields,X - 1,Y);
-                break;
-            } else if (!(fields.get(X + i).get(Y).getPlayer().equals(player))) {
-                if (fields.get(X + i).get(Y).getSurroundUpCount() < i) {
-                    fields.get(X + i).get(Y).setSurroundUpCount(i);
-                    fields.get(X + i).get(Y).setSurroundUpPlayer(player);
-                    getPlayerScore(fields,X + i,Y);
-                }
-                if ((X - 1) >= 0) {
-                    fields.get(X - 1).get(Y).setSurroundDownCount(i);
-                    fields.get(X - 1).get(Y).setSurroundDownPlayer(player);
-                    getPlayerScore(fields,X - 1,Y);
-                }
-                break;
-            } else if ((X + i) == (BORDER_X - 1)) {
-                if ((X - 1) >= 0) {
-                    fields.get(X - 1).get(Y).setSurroundDownCount(i + 1);
-                    fields.get(X - 1).get(Y).setSurroundDownPlayer(player);
-                    getPlayerScore(fields,X - 1,Y);
-                } else {
-                    fields.get(X).get(Y).setSurroundDownCount(i);
-                    fields.get(X).get(Y).setSurroundDownPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-
-
-//-------------------------From Down right to up left------------------------------------//
-        i = 0;
-        while (((X - i) >= 0) && ((Y - i) >= 0)) {                                                                                    //search from left to right
-            if (X == 0 && Y == 0) {                                                                                       //if point is at left border
-                fields.get(X + 1).get(Y + 1).setSurroundUpLeftCount(1);                                               //
-                fields.get(X + 1).get(Y + 1).setSurroundUpLeftPlayer(player);
-                getPlayerScore(fields,X + 1,Y + 1);
-                break;
-            } else if (!(fields.get(X - i).get(Y - i).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X - i).get(Y - i).getSurroundDownRightCount() < i) {                                     //count cannot be decreased
-                    fields.get(X - i).get(Y - i).setSurroundDownRightCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X - i).get(Y - i).setSurroundDownRightPlayer(player);
-                    getPlayerScore(fields,X - i,Y - i);
-                }
-                if (((Y + 1) < BORDER_Y) && ((X + 1) < BORDER_X)) {                                                                        //check right border
-                    fields.get(X + 1).get(Y + 1).setSurroundUpLeftCount(i);
-                    fields.get(X + 1).get(Y + 1).setSurroundUpLeftPlayer(player);
-                    getPlayerScore(fields,X + 1,Y + 1);
-                }
-                break;
-            } else if (((X - i) == 0) && ((Y - i) == 0)) {                                                                            //check left border
-                if (((X + 1) < BORDER_X) && ((Y + 1) < BORDER_Y)) {
-                    fields.get(X + 1).get(Y + 1).setSurroundUpLeftCount(i + 1);
-                    fields.get(X + 1).get(Y + 1).setSurroundUpLeftPlayer(player);
-                    getPlayerScore(fields,X + 1,Y + 1);
-                } else {
-                    fields.get(X).get(Y).setSurroundUpLeftCount(i);
-                    fields.get(X).get(Y).setSurroundUpLeftPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-
-
-        //-------------------------From up left to down right------------------------------------//
-        i = 0;
-        while (((X + i) < BORDER_X) && ((Y + i) < BORDER_Y)) {                                                                                    //search from left to right
-            if (X == (BORDER_X - 1) && Y == (BORDER_Y - 1)) {                                                                                       //if point is at left border
-                fields.get(X - 1).get(Y - 1).setSurroundDownRightCount(1);                                               //
-                fields.get(X - 1).get(Y - 1).setSurroundDownRightPlayer(player);
-                getPlayerScore(fields,X - 1,Y - 1);
-                break;
-            } else if (!(fields.get(X + i).get(Y + i).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X + i).get(Y + i).getSurroundUpLeftCount() < i) {                                     //count cannot be decreased
-                    fields.get(X + i).get(Y + i).setSurroundUpLeftCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X + i).get(Y + i).setSurroundUpLeftPlayer(player);
-                    getPlayerScore(fields,X + i,Y + i);
-                }
-                if (((Y - 1) >= 0) && ((X - 1) >= 0)) {                                                                        //check right border
-                    fields.get(X - 1).get(Y - 1).setSurroundDownRightCount(i);
-                    fields.get(X - 1).get(Y - 1).setSurroundDownRightPlayer(player);
-                    getPlayerScore(fields,X - 1,Y - 1);
-                }
-                break;
-            } else if (((X + i) == (BORDER_X - 1) && ((Y + i) == (BORDER_Y - 1)))) {
-                if (((X - 1) >= 0) && ((Y - 1) >= 0)) {
-                    fields.get(X - 1).get(Y - 1).setSurroundDownRightCount(i + 1);
-                    fields.get(X - 1).get(Y - 1).setSurroundDownRightPlayer(player);
-                    getPlayerScore(fields,X - 1,Y - 1);
-                } else {
-                    fields.get(X).get(Y).setSurroundDownRightCount(i);
-                    fields.get(X).get(Y).setSurroundDownRightPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-
-        //-------------------------From up left to down right------------------------------------//
-        i = 0;
-        while (((X - i) >= 0) && ((Y + i) < BORDER_Y)) {                                                                                    //search from left to right
-            if ((X == 0) && Y == (BORDER_Y - 1)) {                                                                                       //if point is at left border
-                fields.get(X + 1).get(Y - 1).setSurroundUpRightCount(1);                                               //
-                fields.get(X + 1).get(Y - 1).setSurroundUpRightPlayer(player);
-                getPlayerScore(fields,X + 1,Y - 1);
-                break;
-            } else if (!(fields.get(X - i).get(Y + i).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X - i).get(Y + i).getSurroundDownLeftCount() < i) {                                     //count cannot be decreased
-                    fields.get(X - i).get(Y + i).setSurroundDownLeftCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X - i).get(Y + i).setSurroundDownLeftPlayer(player);
-                    getPlayerScore(fields,X - i,Y + i);
-                }
-                if (((Y - 1) >= 0) && ((X + 1) < BORDER_X)) {                                                                        //check right border
-                    fields.get(X + 1).get(Y - 1).setSurroundUpRightCount(i);
-                    fields.get(X + 1).get(Y - 1).setSurroundUpRightPlayer(player);
-                    getPlayerScore(fields,X + 1,Y - 1);
-                }
-                break;
-            } else if (((X - i) == 0) && ((Y + i) == (BORDER_Y - 1))) {
-                if (((X + 1) < BORDER_X) && ((Y - 1) >= 0)) {
-                    fields.get(X + 1).get(Y - 1).setSurroundUpRightCount(i + 1);
-                    fields.get(X + 1).get(Y - 1).setSurroundUpRightPlayer(player);
-                    getPlayerScore(fields,X + 1,Y - 1);
-                } else {
-                    fields.get(X).get(Y).setSurroundUpRightCount(i);
-                    fields.get(X).get(Y).setSurroundUpRightPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-
-        //-------------------------From up left to down right------------------------------------//
-        i = 0;
-        while (((X + i) < BORDER_X) && ((Y - i) >= 0)) {                                                                                    //search from left to right
-            if ((X == BORDER_X - 1) && Y == (0)) {                                                                                       //if point is at left border
-                fields.get(X - 1).get(Y + 1).setSurroundDownLeftCount(1);                                               //
-                fields.get(X - 1).get(Y + 1).setSurroundDownLeftPlayer(player);
-                getPlayerScore(fields,X - 1,Y + 1);
-                break;
-            } else if (!(fields.get(X + i).get(Y - i).getPlayer().equals(player))) {                                  //on index i is not actual player symbol
-                if (fields.get(X + i).get(Y - i).getSurroundUpRightCount() < i) {                                     //count cannot be decreased
-                    fields.get(X + i).get(Y - i).setSurroundUpRightCount(i);                                          //set new count |2->|<-0 X 1->|<-1 X 0->|
-                    fields.get(X + i).get(Y - i).setSurroundUpRightPlayer(player);
-                    getPlayerScore(fields,X + i,Y - i);
-                }
-                if (((Y + 1) < BORDER_Y) && ((X - 1) >= 0)) {                                                                        //check right border
-                    fields.get(X - 1).get(Y + 1).setSurroundDownLeftCount(i);
-                    fields.get(X - 1).get(Y + 1).setSurroundDownLeftPlayer(player);
-                    getPlayerScore(fields,X - 1,Y + 1);
-                }
-                break;
-            } else if (((X + i) == (BORDER_X - 1) && ((Y - i) == 0))) {
-                if (((X - 1) >= 0) && ((Y + 1) < BORDER_Y)) {
-                    fields.get(X - 1).get(Y + 1).setSurroundDownLeftCount(i + 1);
-                    fields.get(X - 1).get(Y + 1).setSurroundDownLeftPlayer(player);
-                    getPlayerScore(fields,X - 1,Y + 1);
-                } else {
-                    fields.get(X).get(Y).setSurroundDownLeftCount(i);
-                    fields.get(X).get(Y).setSurroundDownLeftPlayer(player);
-                    getPlayerScore(fields,X,Y);
-                }
-                break;
-            } else i++;
-        }
-        res = getDebgStr(fields);
     }
 
     private static void getPlayerScore(List<List<Field>> fields, int X, int Y) {
-        int scoreX = 0, scoreO = 0;
+        long scoreX = 0, scoreO = 0;
         fields.get(X).get(Y).setScoreX(0);
         fields.get(X).get(Y).setScoreO(0);
         //Left
         if (fields.get(X).get(Y).getSurroundLeftPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundLeftCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundLeftCount());
         else if (fields.get(X).get(Y).getSurroundLeftPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundLeftCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundLeftCount());
 
         //Right
         if (fields.get(X).get(Y).getSurroundRightPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundRightCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundRightCount());
         else if (fields.get(X).get(Y).getSurroundRightPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundRightCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundRightCount());
 
         //Up
         if (fields.get(X).get(Y).getSurroundUpPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundUpCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundUpCount());
         else if (fields.get(X).get(Y).getSurroundUpPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundUpCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundUpCount());
 
         //Down
         if (fields.get(X).get(Y).getSurroundDownPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundDownCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundDownCount());
         else if (fields.get(X).get(Y).getSurroundDownPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundDownCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundDownCount());
 
         //Up Left
         if (fields.get(X).get(Y).getSurroundUpLeftPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundUpLeftCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundUpLeftCount());
         else if (fields.get(X).get(Y).getSurroundUpLeftPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundUpLeftCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundUpLeftCount());
 
         //Up Right
         if (fields.get(X).get(Y).getSurroundUpRightPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundUpRightCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundUpRightCount());
         else if (fields.get(X).get(Y).getSurroundUpRightPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundUpRightCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundUpRightCount());
 
         //Down Left
         if (fields.get(X).get(Y).getSurroundDownLeftPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundDownLeftCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundDownLeftCount());
         else if (fields.get(X).get(Y).getSurroundDownLeftPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundDownLeftCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundDownLeftCount());
 
         //Down Left
         if (fields.get(X).get(Y).getSurroundDownRightPlayer().equals("X"))
-            scoreX = fields.get(X).get(Y).getScoreX() + getDirPririty(fields.get(X).get(Y).getSurroundDownRightCount());
+            scoreX += getDirPririty(fields.get(X).get(Y).getSurroundDownRightCount());
         else if (fields.get(X).get(Y).getSurroundDownRightPlayer().equals("O"))
-            scoreO = fields.get(X).get(Y).getScoreO() + getDirPririty(fields.get(X).get(Y).getSurroundDownRightCount());
+            scoreO += getDirPririty(fields.get(X).get(Y).getSurroundDownRightCount());
 
         if (scoreX > fields.get(X).get(Y).getScoreX())
             fields.get(X).get(Y).setScoreX(scoreX);
@@ -354,7 +312,7 @@ public class FieldScore {
             fields.get(X).get(Y).setScoreO(scoreO);
     }
 
-    private static int getDirPririty(int num) {
+    private static long getDirPririty(int num) {
         switch (num) {
             case 0:     return 0;
             case 1:     return 1;
@@ -362,6 +320,11 @@ public class FieldScore {
             case 3:     return 100;
             case 4:     return 1000;
             case 5:     return 10000;
+            case 6:     return 100000;
+            case 7:     return 1000000;
+            case 8:     return 10000000;
+            case 9:     return 100000000;
+            case 10:    return 1000000000;
             default:    return -1;
         }
     }
@@ -369,14 +332,14 @@ public class FieldScore {
         String scoreOfX;
         String res;
 
-        int X0 = fields.get(0).get(0).getScoreX();
-        int X1 = fields.get(0).get(1).getScoreX();
-        int X2 = fields.get(0).get(2).getScoreX();
-        int X3 = fields.get(0).get(3).getScoreX();
-        int X4 = fields.get(0).get(4).getScoreX();
-        int X5 = fields.get(0).get(5).getScoreX();
-        int X6 = fields.get(0).get(6).getScoreX();
-        int X7 = fields.get(0).get(7).getScoreX();
+        long X0 = fields.get(0).get(0).getScoreX();
+        long X1 = fields.get(0).get(1).getScoreX();
+        long X2 = fields.get(0).get(2).getScoreX();
+        long X3 = fields.get(0).get(3).getScoreX();
+        long X4 = fields.get(0).get(4).getScoreX();
+        long X5 = fields.get(0).get(5).getScoreX();
+        long X6 = fields.get(0).get(6).getScoreX();
+        long X7 = fields.get(0).get(7).getScoreX();
 
         res = ("0|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
 
@@ -394,7 +357,7 @@ public class FieldScore {
          X6 = fields.get(1).get(6).getScoreX();
          X7 = fields.get(1).get(7).getScoreX();
 
-        res = ("1|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("1|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(2).get(0).getScoreX();
@@ -406,7 +369,7 @@ public class FieldScore {
         X6 = fields.get(2).get(6).getScoreX();
         X7 = fields.get(2).get(7).getScoreX();
 
-        res = ("2|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("2|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(3).get(0).getScoreX();
@@ -418,7 +381,7 @@ public class FieldScore {
         X6 = fields.get(3).get(6).getScoreX();
         X7 = fields.get(3).get(7).getScoreX();
 
-        res = ("3|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("3|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(4).get(0).getScoreX();
@@ -430,7 +393,7 @@ public class FieldScore {
         X6 = fields.get(4).get(6).getScoreX();
         X7 = fields.get(4).get(7).getScoreX();
 
-        res = ("4|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("4|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(5).get(0).getScoreX();
@@ -442,7 +405,7 @@ public class FieldScore {
         X6 = fields.get(5).get(6).getScoreX();
         X7 = fields.get(5).get(7).getScoreX();
 
-        res = ("5|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("5|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(6).get(0).getScoreX();
@@ -454,7 +417,7 @@ public class FieldScore {
         X6 = fields.get(6).get(6).getScoreX();
         X7 = fields.get(6).get(7).getScoreX();
 
-        res = ("6|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|\n");
+        res = ("6|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         X0 = fields.get(7).get(0).getScoreX();
@@ -466,7 +429,7 @@ public class FieldScore {
         X6 = fields.get(7).get(6).getScoreX();
         X7 = fields.get(7).get(7).getScoreX();
 
-        res = ("7|\t" +X0 +"\t|\t"+ X1 +"\t|\t"+ X2 +"\t|\t"+ X3 +"\t|\t"+ X4 +"\t|\t"+ X5 +"\t|\t"+ X6 +"\t|\t"+ X7 +"\t|");
+        res = ("7|\t" +X0 +"\t\t|"+ X1 +"\t\t|"+ X2 +"\t\t|"+ X3 +"\t\t|"+ X4 +"\t\t|"+ X5 +"\t\t|"+ X6 +"\t\t|"+ X7 +"\t|\n");
         scoreOfX += (res);
 
         return scoreOfX;

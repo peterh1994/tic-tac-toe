@@ -15,7 +15,7 @@ public class Field {
     private surrField up_right = new surrField();
     private surrField down_left = new surrField();
     private surrField down_right = new surrField();
-    private int scoreX, scoreO;
+    private long scoreX, scoreO;
 
 
     public Field () {
@@ -79,12 +79,15 @@ public class Field {
     public void setSurroundDownRightPlayer(String surrPlayer) {this.down_right.player = surrPlayer;}
 
 
-    public void setScoreX(int score) {this.scoreX = score;}
-    public void setScoreO(int score) {this.scoreO = score;}
+    public void setScoreX(long score) {this.scoreX = score;}
+    public void setScoreO(long score) {this.scoreO = score;}
 
-    public int getScoreX() {return this.scoreX;}
-    public int getScoreO() {return this.scoreO;}
+    public long getScoreX() {return this.scoreX;}
+    public long getScoreO() {return this.scoreO;}
 
+    public void resetSurroundCount() {
+        this.up.count = this.down.count = this.left.count = this.right.count = this.up_left.count = this.up_right.count = this.down_left.count = this.down_right.count = 0;
+    }
     class surrField {
         public int count = 0;
         public String player = "";
