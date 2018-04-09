@@ -9,6 +9,8 @@ import java.util.List;
 public interface AI {
 
     public void getMoveOfAI(List<List<Field>> fields, int lastPositionX, int lastPositionY, int[] data);
+    public void getMoveOfAI(List<List<Field>> fields, FieldAdapter.bestScore bestScoreX, FieldAdapter.bestScore bestScoreO, int[] data);
+
 
 }
 

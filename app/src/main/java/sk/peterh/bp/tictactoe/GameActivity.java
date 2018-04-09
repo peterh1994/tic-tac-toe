@@ -46,7 +46,8 @@ public class GameActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        mAdapter = new FieldAdapter(mContext, items, new RandomAI());
+        //mAdapter = new FieldAdapter(mContext, items, new RandomAI());
+        mAdapter = new FieldAdapter(mContext, items, new MinMaxAI());
         mRecyclerView.setAdapter(mAdapter);
 
     }

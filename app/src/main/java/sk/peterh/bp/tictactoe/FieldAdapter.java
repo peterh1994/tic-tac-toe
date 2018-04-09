@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import static ConstatntPackage.Constant.BEST_SCORE_WIDTH;
 import static ConstatntPackage.Constant.BORDER_X;
 import static ConstatntPackage.Constant.BORDER_Y;
 
@@ -27,6 +28,8 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
     public AI computer;
     private int mCounter = 1;
     private int playerCounter = 0;
+    private bestScore bestScoreX = new bestScore();
+    private bestScore bestScoreO = new bestScore();
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public CardView mCardView;
@@ -69,16 +72,17 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
                     fields.get(X).get(Y).setPlayer("X");
                     playerCounter++;
                     notifyDataSetChanged();
-                    String result = GameResult.checkWinner(fields, "X", X, Y, playerCounter);
+                    String result = GameResult.checkWinner(fields, "X", X, Y, playerCounter, bestScoreX, bestScoreO);
                     if (!result.isEmpty()) {
                         resultMessage(result);
                     } else {
                         int[] data = new int[2];
-                        computer.getMoveOfAI(fields, X, Y, data);
+                        //computer.getMoveOfAI(fields, X, Y, data);
+                        computer.getMoveOfAI(fields, bestScoreX, bestScoreO, data);
                         fields.get(data[0]).get(data[1]).setPlayer("O");
                         playerCounter++;
                         notifyDataSetChanged();
-                       String result2 = GameResult.checkWinner(fields, "O", data[0], data[1], playerCounter);
+                       String result2 = GameResult.checkWinner(fields, "O", data[0], data[1], playerCounter, bestScoreX ,bestScoreO);
                         if (!result2.isEmpty()) {
                             resultMessage(result2);
                         }
@@ -141,4 +145,10 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
         // show it
         alertDialog.show();
     }
+
+    class bestScore {
+        public int[] X = new int[BEST_SCORE_WIDTH];
+        public int[] Y = new int[BEST_SCORE_WIDTH];
+        public long[] score = new long[BEST_SCORE_WIDTH];
+    };
 }

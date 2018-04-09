@@ -72,6 +72,11 @@ public class RandomAI implements AI {
         data[1] = y;
     }
 
+    @Override
+    public void getMoveOfAI(List<List<Field>> fields, FieldAdapter.bestScore bestScoreX, FieldAdapter.bestScore bestScoreO, int[] data) {
+
+    }
+
     private boolean isInBorder(int X, int Y) {
         if ((X < 0 || X > BORDER_X - 1) || (Y < 0 || Y > BORDER_Y - 1)) return false;
         else return true;
