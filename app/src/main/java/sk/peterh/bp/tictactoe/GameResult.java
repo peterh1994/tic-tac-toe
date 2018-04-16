@@ -60,7 +60,7 @@ public class GameResult {
         if (playerCounter == (BORDER_X*BORDER_Y))
             return "Remíza";
 
-        FieldScore.getFiledScore(fields,player,X,Y, bestScoreX, bestScoreO);
+        FieldScore.getFieldScore(fields,player,X,Y, bestScoreX, bestScoreO);
 
         return "";
 

@@ -2,6 +2,12 @@ package sk.peterh.bp.tictactoe;
 
 import android.graphics.Color;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static ConstatntPackage.Constant.BORDER_X;
+import static ConstatntPackage.Constant.BORDER_Y;
+
 /**
  * Created by Peter.Hajlak on 28.4.2017.
  */
@@ -24,19 +30,6 @@ public class Field {
         scoreX = scoreO = 0;
     }
 
-    public Field(Field aField) {                                            //copy constructor
-        this.player = aField.player;
-        this.scoreX = aField.scoreX;
-        this.scoreO = aField.scoreO;
-        this.left = aField.left;
-        this.right = aField.right;
-        this.up = aField.up;
-        this.down = aField.down;
-        this.up_left = aField.up_left;
-        this.up_right = aField.up_right;
-        this.down_left = aField.down_left;
-        this.down_right = aField.down_right;
-    }
 
     public String getPlayer() {
         return player;

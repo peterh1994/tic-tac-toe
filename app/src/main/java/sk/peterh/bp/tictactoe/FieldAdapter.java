@@ -27,7 +27,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
     public List<List<Field>> fields;
     public AI computer;
     private int mCounter = 1;
-    private int playerCounter = 0;
+    public static int playerCounter = 0;
     private bestScore bestScoreX = new bestScore();
     private bestScore bestScoreO = new bestScore();
 
@@ -46,6 +46,11 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
         this.context = context;
         this.fields = fields;
         this.computer = computer;
+        for (int j = 0; j < BEST_SCORE_WIDTH; j++) {
+            bestScoreO.score[j] = -1;
+            bestScoreO.X[j] = -1;
+            bestScoreO.Y[j] = -1;
+        }
     }
 
 
@@ -146,7 +151,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
         alertDialog.show();
     }
 
-    class bestScore {
+    static class bestScore {
         public int[] X = new int[BEST_SCORE_WIDTH];
         public int[] Y = new int[BEST_SCORE_WIDTH];
         public long[] score = new long[BEST_SCORE_WIDTH];
