@@ -197,6 +197,7 @@ public class Field {
 
     public void resetSurroundCount() {
         this.up.count = this.down.count = this.left.count = this.right.count = this.up_left.count = this.up_right.count = this.down_left.count = this.down_right.count = 0;
+        this.up.player = this.down.player = this.left.player = this.right.player = this.up_left.player = this.up_right.player = this.down_right.player = this.down_left.player = "";
     }
 
     class surrField {

@@ -1,5 +1,6 @@
 package sk.peterh.bp.tictactoe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ConstatntPackage.Constant;
@@ -30,7 +31,6 @@ public class FieldScore {
 
         if (Y != 0){                                                                                    //Check if point is on border of matrix
             i = 1;
-
             while (i > 0) {                                                                              //if i = 1, point is not at border and program can continue
                 if (Y - i >= 0) {                                                                        //check if index with position is not out of border
                     if (fields.get(X).get(Y - i).getPlayer().equals(player)) {                           //if index with position is equal to player's char
@@ -48,8 +48,9 @@ public class FieldScore {
                     break;                                                                               //index is out of matrix border, it means last player's char is on border
             }
         }
-        else i = 2;
+        else i = 1;
         count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        i = 0;
         //Right direction
         if (Y != (BORDER_Y - 1)) {                                                                      //Check if point is on border of matrix
             i = 1;
@@ -70,7 +71,7 @@ public class FieldScore {
                     break;                                                                                 //run out of infinite while
             }
         }
-        else i = 2;
+        else i = 1;
         count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
 
         if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
@@ -108,8 +109,9 @@ public class FieldScore {
                     break;                                                                                 //index is out of matrix border, it means last player's char is on border
             }
         }
-        else i = 2;
+        else i = 1;
         count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        i = 0;
         //Down direction
         if (X != (BORDER_X - 1)) {                                                                       //Check if point is on border of matrix
             i = 1;
@@ -130,7 +132,7 @@ public class FieldScore {
                     break;                                                                                 //run out of infinite while
             }
         }
-        else i = 2;
+        else i = 1;
         count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
 
         if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
@@ -170,8 +172,9 @@ public class FieldScore {
                 else break;                                                                                 //index is out of matrix border, it means last player's char is on border
             }
         }
-        else i = 2;
+        else i = 1;
         count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        i = 0;
         //Down Right
         if ((X != (BORDER_X - 1)) || (Y != (BORDER_Y - 1))){                                            //Check if point is on border of matrix
             i = 1;
@@ -194,7 +197,7 @@ public class FieldScore {
                 else break;                                                                                 //run out of infinite while
             }
         }
-        else i = 2;
+        else i = 1;
         count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
 
         if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
@@ -234,8 +237,9 @@ public class FieldScore {
                 else break;                                                                                 //index is out of matrix border, it means last player's char is on border
             }
         }
-        else i = 2;
+        else i = 1;
         count1 = i - 1;                                                                                 //count of things in direction si depend on counted index
+        i = 0;
         //Up Right
         if ((X != 0) || (Y != (BORDER_Y - 1))){                                                            //Check if point is on border of matrix
             i = 1;
@@ -257,7 +261,7 @@ public class FieldScore {
                 else break;                                                                                 //run out of infinite while
             }
         }
-        else i = 2;
+        else i = 1;
         count2 = i - 1;                                                                                 //count of things in direction si depend on counted index
 
         if ((X_1 != -1) && (Y_1!= -1)) {                                                                //axis must be other than -1, -1 is default value
@@ -310,10 +314,10 @@ public class FieldScore {
             }
         }
 
-//        if (fields.get(X).get(Y).getPlayer().equals("X")) {
-//           res = getDebugStr(fields);
-//            fields.get(X).get(Y).getScoreX();
-//        }
+/*        if (fields.get(X).get(Y).getPlayer().equals("X")) {
+           res = getDebugStr(fields);
+              fields.get(X).get(Y).getScoreX();
+        }*/
 //        else {
 //            res = getDebugStr(fields);
 //            fields.get(X).get(Y).getScoreX();
@@ -338,7 +342,7 @@ public class FieldScore {
             scoreO += getDirPririty(fields.get(X).get(Y).getSurroundLeftCount() + fields.get(X).get(Y).getSurroundRightCount());
         else if (fields.get(X).get(Y).getSurroundLeftPlayer().equals("O"))
             scoreO += getDirPririty(fields.get(X).get(Y).getSurroundLeftCount());
-        else if (fields.get(X).get(Y).getSurroundLeftPlayer().equals("O"))
+        else if (fields.get(X).get(Y).getSurroundRightPlayer().equals("O"))
             scoreO += getDirPririty(fields.get(X).get(Y).getSurroundRightCount());
 
         //Up + Down
@@ -437,6 +441,31 @@ public class FieldScore {
                     dir[j] = dir[j+1];
                     array[j+1] = tmpArray;
                     dir[j+1] = tmpDir;
+                }
+            }
+        }
+    }
+
+    public static void bubbleSort(List<MinMaxAI.finalScore> finScore){
+        for (int i = 0; i < finScore.size() - 1; i++) {
+            for (int j = 0; j < finScore.size() - i - 1; j++) {
+                if(finScore.get(j).score < finScore.get(j + 1).score){
+                    int scoreTmp,Xtmp,Ytmp;
+                    Constant.direction dirTmp;
+                    scoreTmp = finScore.get(j).score;
+                    Xtmp = finScore.get(j).X;
+                    Ytmp = finScore.get(j).Y;
+                    dirTmp = finScore.get(j).dir;
+
+                    finScore.get(j).score = finScore.get(j+1).score;
+                    finScore.get(j).X = finScore.get(j+1).X;
+                    finScore.get(j).Y = finScore.get(j+1).Y;
+                    finScore.get(j).dir = finScore.get(j+1).dir;
+
+                    finScore.get(j+1).score = scoreTmp;
+                    finScore.get(j+1).X = Xtmp;
+                    finScore.get(j+1).Y = Ytmp;
+                    finScore.get(j+1).dir = dirTmp;
                 }
             }
         }

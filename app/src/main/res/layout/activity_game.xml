@@ -5,13 +5,14 @@
     android:gravity="center">
     <!--tools:context="">-->
     <TextView
+        android:id="@+id/gameHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:text="Získaj 5-krát 'X' veďla seba v rade, stĺpci alebo diagonále."
-        android:textSize="20sp"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textSize="20sp" />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:scrollbars="vertical"

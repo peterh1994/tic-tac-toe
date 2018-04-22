@@ -51,6 +51,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
             bestScoreO.X[j] = -1;
             bestScoreO.Y[j] = -1;
         }
+        this.playerCounter = 0;
     }
 
 
@@ -80,6 +81,7 @@ public class FieldAdapter extends RecyclerView.Adapter<FieldAdapter.ViewHolder> 
                     String result = GameResult.checkWinner(fields, "X", X, Y, playerCounter, bestScoreX, bestScoreO);
                     if (!result.isEmpty()) {
                         resultMessage(result);
+                        playerCounter = 0;
                     } else {
                         int[] data = new int[2];
                         //computer.getMoveOfAI(fields, X, Y, data);

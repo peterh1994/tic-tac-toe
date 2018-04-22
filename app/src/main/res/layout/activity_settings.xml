@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_settings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="sk.peterh.bp.tictactoe.MainActivity">
+
+    <EditText
+        android:id="@+id/editText5"
+        android:layout_width="157dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/editText4"
+        android:layout_alignTop="@+id/WinningCountOutput"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        android:text="Počet pre výhru:"
+        tools:clickable="false"
+        android:layout_alignLeft="@+id/editText4" />
+
+    <EditText
+        android:id="@+id/WinningCountOutput"
+        style="@style/Widget.AppCompat.AutoCompleteTextView"
+        android:layout_width="147dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/BorderSizeInput"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/BorderSizeInput"
+        android:layout_marginTop="176dp"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        android:visibility="visible"
+        tools:ignore="Deprecated"
+        android:configChanges="keyboardHidden"  />
+
+    <EditText
+        android:id="@+id/BorderSizeInput"
+        android:layout_width="148dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/editText4"
+        android:layout_marginEnd="22dp"
+        android:layout_marginRight="22dp"
+        android:digits="0123456789"
+        android:ems="10"
+        android:inputType="number"/>
+        <!--android:imeOptions="actionDone"-->
+
+
+
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="157dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="33dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="107dp"
+        android:editable="false"
+        android:ems="10"
+        android:inputType="none"
+        android:text="Veľkosť plochy:"
+        tools:clickable="false" />
+
+</RelativeLayout>

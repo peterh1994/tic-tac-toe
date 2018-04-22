@@ -37,6 +37,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button settings = (Button)findViewById(R.id.settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, SettingsActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
+
         Button about = (Button)findViewById(R.id.about);
         about.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // set dialog message
                 alertDialogBuilder
-                        .setMessage("Aplikácia bola vytvorená v rámci bakalárskej práce Petra Haljaka v roku 2017.")
+                        .setMessage("Aplikácia bola vytvorená v rámci bakalárskej práce Petra Haljaka v roku 2018.")
                         .setCancelable(false)
                         .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {

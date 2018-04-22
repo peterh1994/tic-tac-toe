@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static ConstatntPackage.Constant.BORDER_X;
 import static ConstatntPackage.Constant.BORDER_Y;
+import static ConstatntPackage.Constant.WINNIG_COUNT;
 
 /**
  * Created by Peter.Hajlak on 28.4.2017.
@@ -38,6 +40,8 @@ public class GameActivity extends AppCompatActivity {
 
 
         getSupportActionBar().setTitle("Game");
+        TextView tvGH = (TextView)(findViewById(R.id.gameHint));
+        tvGH.setText("Získaj " + String.valueOf(WINNIG_COUNT) + "-krát 'X' veďla seba v rade, stĺpci alebo diagonále.");
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContext = getApplicationContext();
