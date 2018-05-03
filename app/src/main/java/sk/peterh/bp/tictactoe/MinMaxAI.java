@@ -49,24 +49,8 @@ public class MinMaxAI implements AI {
                 else tests = 1;
 
                 if (tests > 0) {
-                    dirScore(fields, bestScoreO, "O", i, dirScore, dirOrigin);
-                    for (int g = 0; g < dirScore.length; g++) {
-                        if ((dirScore[0] == dirScore[g]) && dirScore[g] != 0) {
-                            if (dirPossibility(fields,"O", bestScoreO.X[i], bestScoreO.Y[i], dirScore[g], dirOrigin[g])) {
-                                finScore.add(new finalScore());
-                                int lastIndex = finScore.size()-1;
-                                finScore.get(lastIndex).X = bestScoreO.X[i];
-                                finScore.get(lastIndex).Y = bestScoreO.Y[i];
-                                finScore.get(lastIndex).score = dirScore[g];
-                                finScore.get(lastIndex).dir = dirOrigin[g];
-                                tests = 2;
-                            }
-                        } else if (dirScore[0] == 0){
-                            tests = 0;
-                            break;
-                        }
-                        else break;
-                    }
+
+                    if (filterScore(bestScoreO, fields, i, finScore,"O")) tests = 1;
                 }
 
                 if (tests > 1) {
@@ -90,20 +74,10 @@ public class MinMaxAI implements AI {
 
         List<finalScore> finScoreX = new ArrayList<finalScore>();
 
+
+
         for (int i = 0; i < BEST_SCORE_WIDTH; i++) {
-            dirScore(fields, bestScoreX, "X", i, dirScore, dirOrigin);
-            for (int g = 0; g < dirScore.length; g++) {
-                if ((dirScore[0] == dirScore[g]) && dirScore[g] != 0) {
-                    if (dirPossibility(fields,"X", bestScoreX.X[i], bestScoreX.Y[i], dirScore[g], dirOrigin[g])) {
-                        finScoreX.add(new finalScore());
-                        int lastIndex = finScoreX.size() - 1;
-                        finScoreX.get(lastIndex).X = bestScoreX.X[i];
-                        finScoreX.get(lastIndex).Y = bestScoreX.Y[i];
-                        finScoreX.get(lastIndex).score = dirScore[g];
-                        finScoreX.get(lastIndex).dir = dirOrigin[g];
-                    }
-                } else break;
-            }
+            filterScore(bestScoreX, fields, i, finScoreX,"X");
         }
         FieldScore.bubbleSort(finScoreX);
 
@@ -174,6 +148,38 @@ public class MinMaxAI implements AI {
         }
     }
 
+    private boolean filterScore(FieldAdapter.bestScore bestScore, List<List<Field>> items,int bestScoreIndex, List<finalScore> finScore, String player) {
+        direction dirOrigin[] = new direction[]{LEFT_RIGHT, UP_DOWN, UP_LEFT_DOWN_RIGHT, UP_RIGHT_DOWN_LEFT};
+        int dirScore[] = new int[]{0, 0, 0, 0};
+
+        if (bestScore.score[bestScoreIndex] == -1)
+            return false;                                                                           //check for intit value
+        else if (!items.get(bestScore.X[bestScoreIndex]).get(bestScore.Y[bestScoreIndex]).isEmpty())
+            return false;                         //check if point is free
+
+        int tmpHightScore = 0;
+        dirScore(items, bestScore, player, bestScoreIndex, dirScore, dirOrigin);
+        for (int g = 0; g < dirScore.length; g++) {
+            if (finScore.size() == 0) tmpHightScore = dirScore[0];                                  //finScore is empty
+            else tmpHightScore = finScore.get(0).score;                                             //use highiest value at finScore
+            if ((tmpHightScore == dirScore[g]) && dirScore[g] != 0) {
+                if (dirPossibility(items, player, bestScore.X[bestScoreIndex], bestScore.Y[bestScoreIndex], dirScore[g], dirOrigin[g])) {
+                    finScore.add(new finalScore());
+                    int lastIndex = finScore.size() - 1;
+                    finScore.get(lastIndex).X = bestScore.X[bestScoreIndex];
+                    finScore.get(lastIndex).Y = bestScore.Y[bestScoreIndex];
+                    finScore.get(lastIndex).score = dirScore[g];
+                    finScore.get(lastIndex).dir = dirOrigin[g];
+                }
+            } else if (dirScore[0] == 0) return false;
+            else break;
+        }
+
+        if (finScore.size() == 0) return false;
+
+        return true;
+    }
+
     private void dirScore(List<List<Field>> items, FieldAdapter.bestScore bestScoreTmp, String player, int index, int dirScore[], direction dir[]) {
         for (int i = 0; i < dir.length;i++)
             dirScore[i] = 0;
@@ -206,28 +212,29 @@ public class MinMaxAI implements AI {
     }
 
     private boolean dirPossibility(List<List<Field>> fields,String player, int X, int Y, int dirScore, direction dirOrigin) {
-        int emptyFields = 0, crrConst = 0, dirCount = 0;
+        int emptyFields = 0, crrConst = 0;
+        int dirCountTmp = 0;
 
         switch (dirOrigin) {
 
             case LEFT_RIGHT:
 
                 if (fields.get(X).get(Y).getSurroundLeftPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundLeftCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundLeftCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (Y - dirCount) - crrConst; j >= 0; j--) {
+                for (int j = (Y - dirCountTmp) - crrConst; j >= 0; j--) {
                     if (fields.get(X).get(j).isEmpty() || fields.get(X).get(j).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
                 }
 
-                dirCount = 0;
+                dirCountTmp = 0;
                 if (fields.get(X).get(Y).getSurroundRightPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundRightCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundRightCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (Y + dirCount) + crrConst; j < BORDER_X; j++) {
+                for (int j = (Y + dirCountTmp) + crrConst; j < BORDER_X; j++) {
                     if (fields.get(X).get(j).isEmpty() || fields.get(X).get(j).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
@@ -237,21 +244,21 @@ public class MinMaxAI implements AI {
 
             case UP_DOWN:
                 if (fields.get(X).get(Y).getSurroundUpPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundUpCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundUpCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (X - dirCount) - crrConst; j >= 0; j--) {
+                for (int j = (X - dirCountTmp) - crrConst; j >= 0; j--) {
                     if (fields.get(j).get(Y).isEmpty() || fields.get(j).get(Y).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
                 }
 
-                dirCount = 0;
+                dirCountTmp = 0;
                 if (fields.get(X).get(Y).getSurroundDownPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundDownCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundDownCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (X + dirCount) + crrConst; j < BORDER_X; j++) {
+                for (int j = (X + dirCountTmp) + crrConst; j < BORDER_X; j++) {
                     if (fields.get(j).get(Y).isEmpty()  || fields.get(j).get(Y).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
@@ -261,21 +268,21 @@ public class MinMaxAI implements AI {
 
             case UP_LEFT_DOWN_RIGHT:
                 if (fields.get(X).get(Y).getSurroundUpLeftPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundUpLeftCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundUpLeftCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (X - dirCount) - crrConst, k = (Y - dirCount) - crrConst; (j >= 0) && (k >= 0); j--, k--) {
+                for (int j = (X - dirCountTmp) - crrConst, k = (Y - dirCountTmp) - crrConst; (j >= 0) && (k >= 0); j--, k--) {
                     if (fields.get(j).get(k).isEmpty() || fields.get(j).get(k).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
                 }
 
-                dirCount = 0;
+                dirCountTmp = 0;
                 if (fields.get(X).get(Y).getSurroundDownRightPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundDownRightCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundDownRightCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (X + dirCount) + crrConst, k = (Y + dirCount) + crrConst; ((j < BORDER_X) && (k < BORDER_Y)); j++, k++) {
+                for (int j = (X + dirCountTmp) + crrConst, k = (Y + dirCountTmp) + crrConst; ((j < BORDER_X) && (k < BORDER_Y)); j++, k++) {
                     if (fields.get(j).get(k).isEmpty() || fields.get(j).get(k).getPlayer().equals(player))
                         emptyFields += 1;
                     else break;
@@ -286,30 +293,30 @@ public class MinMaxAI implements AI {
             case UP_RIGHT_DOWN_LEFT:
 
                 if (fields.get(X).get(Y).getSurroundUpRightPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundUpRightCount()) > 0)
-                     crrConst = 1;
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundUpRightCount()) > 0)
+                        crrConst = 1;
                 }
-                for (int j = (X - dirCount) - crrConst, k = (Y + dirCount) + crrConst; (j >= 0) && (k < BORDER_Y); j--, k++) {
+                for (int j = (X - dirCountTmp) - crrConst, k = (Y + dirCountTmp) + crrConst; (j >= 0) && (k < BORDER_Y); j--, k++) {
                     if (fields.get(j).get(k).isEmpty() || fields.get(j).get(k).getPlayer().equals(player))
-                    emptyFields += 1;
+                        emptyFields += 1;
                     else break;
                 }
 
-                dirCount = 0;
+                dirCountTmp = 0;
                 if (fields.get(X).get(Y).getSurroundDownLeftPlayer().equals(player)) {
-                    if ((dirCount = fields.get(X).get(Y).getSurroundDownLeftCount()) > 0)
+                    if ((dirCountTmp = fields.get(X).get(Y).getSurroundDownLeftCount()) > 0)
                         crrConst = 1;
                 }
-                for (int j = (X + dirCount) + crrConst, k = (Y - dirCount) - crrConst; ((j < BORDER_X) && (k >= 0)); j++, k--) {
+                for (int j = (X + dirCountTmp) + crrConst, k = (Y - dirCountTmp) - crrConst; ((j < BORDER_X) && (k >= 0)); j++, k--) {
                     if (fields.get(j).get(k).isEmpty()  || fields.get(j).get(k).getPlayer().equals(player))
-                    emptyFields += 1;
+                        emptyFields += 1;
                     else break;
                 }
                 if (emptyFields + dirScore + 1>= WINNIG_COUNT) return true;
-                    break;
+                break;
 
-                    default:
-                        return false;
+            default:
+                return false;
         }
         return false;
     }
