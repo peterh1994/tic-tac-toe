@@ -30,11 +30,6 @@ public class MinMaxAI implements AI {
     public void getMoveOfAI(List<List<Field>> fields, FieldAdapter.bestScore bestScoreX, FieldAdapter.bestScore bestScoreO, int[] data) {
         FieldAdapter.bestScore bestScoreTmp = new FieldAdapter.bestScore();
         List<finalScore> finScore = new ArrayList<finalScore>();
-        int dirScore[] = new int[]{0, 0, 0, 0};
-        int dirScoreTmp[] = new int[]{0, 0, 0 ,0};
-        direction dirTmp[] = new direction[]{LEFT_RIGHT, UP_DOWN, UP_LEFT_DOWN_RIGHT, UP_RIGHT_DOWN_LEFT};
-        direction dirOrigin[] = new direction[]{LEFT_RIGHT, UP_DOWN, UP_LEFT_DOWN_RIGHT, UP_RIGHT_DOWN_LEFT};
-        int bestScoreIndex = 0;
 
 
         for (int i = 0; i < BEST_SCORE_WIDTH; i++) {
@@ -151,11 +146,6 @@ public class MinMaxAI implements AI {
     private boolean filterScore(FieldAdapter.bestScore bestScore, List<List<Field>> items,int bestScoreIndex, List<finalScore> finScore, String player) {
         direction dirOrigin[] = new direction[]{LEFT_RIGHT, UP_DOWN, UP_LEFT_DOWN_RIGHT, UP_RIGHT_DOWN_LEFT};
         int dirScore[] = new int[]{0, 0, 0, 0};
-
-        if (bestScore.score[bestScoreIndex] == -1)
-            return false;                                                                           //check for intit value
-        else if (!items.get(bestScore.X[bestScoreIndex]).get(bestScore.Y[bestScoreIndex]).isEmpty())
-            return false;                         //check if point is free
 
         int tmpHightScore = 0;
         dirScore(items, bestScore, player, bestScoreIndex, dirScore, dirOrigin);
